@@ -1,19 +1,30 @@
 import React from "react"
-import { useGetCabinsQuery } from "../../api/apiSlice"
+import { useGetCabinsQuery, useAddCabinMutation } from "../../api/apiSlice"
 
 const Cabins = () => {
 
-    const [newCabin, setNewCabin] = React.useState()
-    const {data} = useGetCabinsQuery()
+    const [newCabin, setNewCabin] = React.useState("")
+    const {data: cabins, isLoading, isSuccess, isError, error} = useGetCabinsQuery()
+    const [addCabin] = useAddCabinMutation()
 
-    console.log(data)
+    let content
+    if (isLoading) {
+        content = <p>Loading ...</p>
+    } else if (isSuccess) {
+        content = JSON.stringify(cabins)
+    } else if (isError) {
+        content = <p>{error}</p>
+    }
+
+
 
     const handleSubmit = e => {
         e.preventDefault()
-        // For now
-        console.log(newCabin)
+        addCabin({name: newCabin})
         setNewCabin("")
     }
+
+    
     return (
         <>
             <h1>Cabins List</h1>
@@ -26,6 +37,7 @@ const Cabins = () => {
                 />
                 <button type="submit">Add Cabin</button>
             </form>
+            {content}
         </>
     )
 }
